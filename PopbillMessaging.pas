@@ -53,6 +53,7 @@ type
                 sendNum         : string;
                 receiveNum      : string;
                 receiveName     : string;
+                reserveDT       : string;
                 sendDT          : string;
                 resultDT        : string;
                 sendResult      : string;
@@ -86,6 +87,7 @@ type
 
                 //메시지 상세내역 및 전송상태 확인.
                 function GetMessages(CorpNum : String; receiptNum : string; UserID : String) :TSentMessageList;
+                function CancelReserve(CorpNum : String; receiptNum : string; UserID : String) : TResponse;
         end;
 implementation
 constructor TMessagingService.Create(PartnerID : String; SecretKey : String);
@@ -257,6 +259,7 @@ begin
                         result[i].sendNum := getJSonString(jsons[i],'sendNum');
                         result[i].receiveNum := getJSonString(jsons[i],'receiveNum');
                         result[i].receiveName := getJSonString(jsons[i],'receiveName');
+                        result[i].reserveDT := getJSonString(jsons[i],'reserveDT');
                         result[i].sendDT := getJSonString(jsons[i],'sendDT');
                         result[i].resultDT := getJSonString(jsons[i],'resultDT');
                         result[i].sendResult := getJSonString(jsons[i],'sendResult');
@@ -270,5 +273,18 @@ begin
         end;
 
 end;
+
+function TMessagingService.CancelReserve(CorpNum : String; receiptNum : string; UserID : String) : TResponse;
+var
+        responseJson : String;
+begin
+         if receiptNum = '' then raise EPopbillException.Create(-99999999,'No ReceiptNum');
+
+        responseJson := httpget('/Message/' + receiptNum + '/Cancel',CorpNum,UserID);
+
+        result.code := getJSonInteger(responseJson,'code');
+        result.message := getJSonString(responseJson,'message');
+end;
+
 //End of Unit;
 end.
