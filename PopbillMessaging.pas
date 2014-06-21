@@ -88,6 +88,9 @@ type
                 //메시지 상세내역 및 전송상태 확인.
                 function GetMessages(CorpNum : String; receiptNum : string; UserID : String) :TSentMessageList;
                 function CancelReserve(CorpNum : String; receiptNum : string; UserID : String) : TResponse;
+
+                //문자관련 연결 url.
+                function GetURL(CorpNum : String; UserID : String; TOGO : String) : String;
         end;
 implementation
 constructor TMessagingService.Create(PartnerID : String; SecretKey : String);
@@ -286,5 +289,12 @@ begin
         result.message := getJSonString(responseJson,'message');
 end;
 
+function TMessagingService.getURL(CorpNum : String; UserID : String; TOGO : String) : String;
+var
+        responseJson : String;
+begin
+        responseJson := httpget('/Message/?TG=' + TOGO ,CorpNum,UserID);
+        result := getJSonString(responseJson,'url');
+end;
 //End of Unit;
 end.
