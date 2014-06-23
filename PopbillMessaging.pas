@@ -65,7 +65,7 @@ type
         private
                 function SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; content : string; subject : string; Messages: TMessageList; reserveDT : String; UserID : String) : String;
         public
-                constructor Create(PartnerID : String; SecretKey : String);
+                constructor Create(LinkID : String; SecretKey : String);
 
                 //회원별 전송 단가 확인.
                 function GetUnitCost(CorpNum : String; MsgType:EnumMessageType) : Single;
@@ -93,9 +93,9 @@ type
                 function GetURL(CorpNum : String; UserID : String; TOGO : String) : String;
         end;
 implementation
-constructor TMessagingService.Create(PartnerID : String; SecretKey : String);
+constructor TMessagingService.Create(LinkID : String; SecretKey : String);
 begin
-       inherited Create(PartnerID,SecretKey);
+       inherited Create(LinkID,SecretKey);
        AddScope('150');
        AddScope('151');
        AddScope('152');
