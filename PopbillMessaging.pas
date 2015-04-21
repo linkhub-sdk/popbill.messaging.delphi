@@ -85,6 +85,10 @@ type
                 function SendXMS(CorpNum : String; Messages : TMessageList; reserveDT : String; UserID : String) : String; overload;
                 function SendXMS(CorpNum : String; sender : String; subject : String; content : string; Messages: TMessageList; reserveDT : String; UserID : String) : String; overload;
 
+                //MMS 관련함수.
+                function SendMMS(CorpNum : String; sender : String; receiver : String; receiverName : String; subject : String; content : String; mmsfilepath : String; reserveDT : String; UserID : String) : String; overload;
+                function SendMMS(CorpNum : String; sender : String; subject : String; content : String; Messages : TMessageList;  mmsfilepath : String; reserveDT : String; UserID : String) : String; overload;
+
                 //메시지 상세내역 및 전송상태 확인.
                 function GetMessages(CorpNum : String; receiptNum : string; UserID : String) :TSentMessageList;
                 function CancelReserve(CorpNum : String; receiptNum : string; UserID : String) : TResponse;
@@ -145,6 +149,75 @@ begin
 
         result := getJsonString(responseJson,'receiptNum');
 
+end;
+
+
+function TMessagingService.SendMMS(CorpNum : String; sender : String; receiver : String; receiverName : String; subject : String; content : String; mmsfilepath : String; reserveDT : String; UserID : String) : String;
+var
+        Messages : TMessageList;
+begin
+        SetLength(Messages,1);
+
+        Messages[0] := TMessage.Create;
+
+        Messages[0].sender := sender;
+        Messages[0].receiver := receiver;
+        Messages[0].receiverName := receiverName;
+        Messages[0].content := content;
+        Messages[0].subject := subject;
+
+        result := SendMMS(CorpNum, sender, subject, content, Messages, mmsfilepath, reserveDT, UserID);
+end;
+
+function TMessagingService.SendMMS(CorpNum : String; sender : String; subject : String; content : String; Messages : TMessageList;  mmsfilepath : String; reserveDT : String; UserID : String) : String;
+
+var
+        requestJson, responseJson : string;
+        files : TFileList;
+        i : Integer;
+begin
+
+        SetLength(files,1);
+
+        files[0] := TFile.Create;
+        files[0].FieldName := 'file';
+        files[0].FileName := ExtractFileName(mmsfilepath);
+        files[0].Data := TFileStream.Create(mmsfilepath,fmOpenRead);
+ 
+
+        if Length(Messages) = 0 then raise EPopbillException.Create(-99999999,'전송할 메시지가 입력되지 않았습니다.');
+
+        requestJson := '{';
+
+        if sender <> ''          then requestJson := requestJson + '"snd":"' + EscapeString(sender) + '",';
+        if content <> ''         then requestJson := requestJson + '"content":"' + EscapeString(content) + '",';
+        if subject <> ''         then requestJson := requestJson + '"subject":"' + EscapeString(subject) + '",';
+        if reserveDT <> ''       then requestJson := requestJson + '"sndDT":"' + EscapeString(reserveDT) + '",';
+
+        requestJson := requestJson + '"msgs":[';
+        for i := 0 to Length(Messages) - 1 do begin
+                requestJson := requestJson +
+                        '{"snd":"'+EscapeString(Messages[i].sender)+'",'+
+                        '"rcv":"'+EscapeString(Messages[i].receiver)+'",'+
+                        '"rcvnm":"'+EscapeString(Messages[i].receiverName)+'",'+
+                        '"msg":"'+EscapeString(Messages[i].content)+'",'+
+                        '"sjt":"'+EscapeString(Messages[i].subject)+'"}';
+
+                if i < Length(Messages) - 1 then requestJson := requestJson + ',';
+        end;
+        requestJson := requestJson + ']';
+
+        requestJson := requestJson + '}';
+
+       try
+                responseJson := httppost('/MMS',CorpNum,UserID,requestJson,files);
+       finally
+                for i:= 0 to Length(files) -1 do begin
+                        files[i].Data.Free;
+                end;
+       end;
+
+       result := getJSonString(responseJson,'receiptNum');
 end;
 
 function TMessagingService.SendSMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; content : String; reserveDT : String; UserID : String) : String;
