@@ -426,7 +426,7 @@ begin
         uri := uri + '&&SenderYN=1';
 
         responseJson := httpget(uri,CorpNum,UserID);
-        ShowMessage(uri);
+
         result := TSearchList.Create;
 
         result.code             := getJSonInteger(responseJson,'code');
