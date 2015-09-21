@@ -362,8 +362,6 @@ begin
                         result[i].resultDT := getJSonString(jsons[i],'resultDT');
                         result[i].sendResult := getJSonString(jsons[i],'sendResult');
 
-
-
                 end;
 
         except on E:Exception do
@@ -394,7 +392,10 @@ end;
 
 function TMessagingService.SearchMessages(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; UserID : String) :TSearchList;
 var
-        responseJson,uri,StateList,ItemList: String;
+        responseJson : String;
+        uri : String;
+        StateList : String;
+        ItemList: String;
         jSons : ArrayOfString;
         i : Integer;
 begin
@@ -413,6 +414,8 @@ begin
         uri := '/Message/Search?SDate='+SDate+'&&EDate='+EDate;
         uri := uri + '&&State='+ StateList;
         uri := uri + '&&Item=' + ItemList;
+
+        if Page < 1 then Page := 1;
         uri := uri + '&&Page=' + IntToStr(Page);
         uri := uri + '&&PerPage=' + IntToSTr(PerPage);
 
@@ -423,7 +426,7 @@ begin
         uri := uri + '&&SenderYN=1';
 
         responseJson := httpget(uri,CorpNum,UserID);
-
+        ShowMessage(uri);
         result := TSearchList.Create;
 
         result.code             := getJSonInteger(responseJson,'code');
@@ -436,17 +439,20 @@ begin
         try
                 jSons := getJSonList(responseJson,'list');
                 SetLength(result.list, Length(jSons));
-
                 for i:=0 to Length(jSons)-1 do
                 begin
                         result.list[i] := TSentMessage.Create;
 
                         result.list[i].content          := getJSonString(jSons[i],'content');
                         result.list[i].sendNum          := getJSonString(jSons[i],'sendNum');
+                        result.list[i].subject          := getJSonString(jSons[i],'subject');
                         result.list[i].receiveNum       := getJSonString(jSons[i],'receiveNum');
                         result.list[i].receiveName      := getJSonString(jSons[i],'receiveName');
                         result.list[i].resultDT         := getJSonString(jSons[i],'resultDT');
+                        result.list[i].sendDT         := getJSonString(jSons[i],'sendDT');
+                        result.list[i].reserveDT         := getJSonString(jSons[i],'reserveDT');
                         result.list[i].sendResult       := getJSonString(jSons[i],'sendResult');
+
                         result.list[i].state            := getJSonInteger(jSons[i],'state');
                         result.list[i].messageType      := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                 end;
