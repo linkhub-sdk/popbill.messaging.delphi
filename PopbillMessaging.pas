@@ -27,7 +27,7 @@ unit PopbillMessaging;
 
 interface
 uses
-        TypInfo,SysUtils,Classes, Dialogs,
+        TypInfo,SysUtils,Classes,
         Popbill,
         Linkhub;
 type
@@ -419,11 +419,11 @@ begin
         uri := uri + '&&Page=' + IntToStr(Page);
         uri := uri + '&&PerPage=' + IntToSTr(PerPage);
 
-        if ReserveYN Then
-        uri := uri + '&&ReserveYN=1';
+        if ReserveYN Then uri := uri + '&&ReserveYN=1'
+        else uri := uri + '&&ResreveYN=0';
 
-        if SenderYN Then
-        uri := uri + '&&SenderYN=1';
+        if SenderYN Then uri := uri + '&&SenderYN=1'
+        else uri := uri + '&&SenderYN=0';
 
         responseJson := httpget(uri,CorpNum,UserID);
 
