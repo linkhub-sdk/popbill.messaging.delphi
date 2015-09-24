@@ -420,7 +420,7 @@ begin
         uri := uri + '&&PerPage=' + IntToSTr(PerPage);
 
         if ReserveYN Then uri := uri + '&&ReserveYN=1'
-        else uri := uri + '&&ResreveYN=0';
+        else uri := uri + '&&ReserveYN=0';
 
         if SenderYN Then uri := uri + '&&SenderYN=1'
         else uri := uri + '&&SenderYN=0';
