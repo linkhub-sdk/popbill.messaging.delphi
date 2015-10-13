@@ -59,6 +59,7 @@ type
                 sendDT          : string;
                 resultDT        : string;
                 sendResult      : string;
+                tranNet         : string;
         end;
 
         TSentMessageList = Array of TSentMessage;
@@ -361,7 +362,7 @@ begin
                         result[i].sendDT := getJSonString(jsons[i],'sendDT');
                         result[i].resultDT := getJSonString(jsons[i],'resultDT');
                         result[i].sendResult := getJSonString(jsons[i],'sendResult');
-
+                        result[i].tranNet := getJSonString(jsons[i],'tranNet');
                 end;
 
         except on E:Exception do
@@ -452,12 +453,10 @@ begin
                         result.list[i].sendDT         := getJSonString(jSons[i],'sendDT');
                         result.list[i].reserveDT         := getJSonString(jSons[i],'reserveDT');
                         result.list[i].sendResult       := getJSonString(jSons[i],'sendResult');
-
+                        result.list[i].tranNet       := getJSonString(jSons[i],'tranNet');
                         result.list[i].state            := getJSonInteger(jSons[i],'state');
                         result.list[i].messageType      := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                 end;
-
-
         except on E:Exception do
                 raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
         end;
