@@ -375,12 +375,23 @@ function TMessagingService.CancelReserve(CorpNum : String; receiptNum : string; 
 var
         responseJson : String;
 begin
-         if receiptNum = '' then raise EPopbillException.Create(-99999999,'No ReceiptNum');
+        if receiptNum = '' then raise EPopbillException.Create(-99999999,'No ReceiptNum');
+        try
+                responseJson := httpget('/Message/' + receiptNum + '/Cancel',CorpNum,UserID);
 
-        responseJson := httpget('/Message/' + receiptNum + '/Cancel',CorpNum,UserID);
+                result.code := getJSonInteger(responseJson,'code');
+                result.message := getJSonString(responseJson,'message');
+        except
+                on le : EPopbillException do begin
+                        if FIsThrowException then
+                        begin
+                                raise EPopbillException.Create(le.code,le.Message);
+                        end;
 
-        result.code := getJSonInteger(responseJson,'code');
-        result.message := getJSonString(responseJson,'message');
+                        result.code := le.code;
+                        result.message := le.Message;
+                end;
+        end;
 end;
 
 function TMessagingService.getURL(CorpNum : String; UserID : String; TOGO : String) : String;
