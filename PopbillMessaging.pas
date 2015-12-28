@@ -108,7 +108,7 @@ type
                 //예약전송 메시지 취소
                 function CancelReserve(CorpNum : String; receiptNum : string; UserID : String) : TResponse;
                 //메시지 전송결과 검색조회 
-                function Search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; UserID : String) :TSearchList;
+                function Search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; Order : String; UserID : String) :TSearchList;
                 //문자관련 연결 url.
                 function GetURL(CorpNum : String; UserID : String; TOGO : String) : String;
         end;
@@ -402,7 +402,7 @@ begin
         result := getJSonString(responseJson,'url');
 end;
 
-function TMessagingService.search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; UserID : String) :TSearchList;
+function TMessagingService.search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; Order : String; UserID : String) :TSearchList;
 var
         responseJson : String;
         uri : String;
@@ -437,6 +437,8 @@ begin
         if SenderYN Then uri := uri + '&&SenderYN=1'
         else uri := uri + '&&SenderYN=0';
 
+        uri := uri + '&&Order=' + Order;
+        
         responseJson := httpget(uri,CorpNum,UserID);
 
         result := TSearchList.Create;
