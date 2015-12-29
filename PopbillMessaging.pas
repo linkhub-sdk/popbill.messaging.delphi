@@ -56,6 +56,7 @@ type
                 receiveNum      : string;
                 receiveName     : string;
                 reserveDT       : string;
+                receiptDT       : string;
                 sendDT          : string;
                 resultDT        : string;
                 sendResult      : string;
@@ -359,6 +360,7 @@ begin
                         result[i].receiveNum := getJSonString(jsons[i],'receiveNum');
                         result[i].receiveName := getJSonString(jsons[i],'receiveName');
                         result[i].reserveDT := getJSonString(jsons[i],'reserveDT');
+                        result[i].receiptDT := getJSonString(jsons[i],'receiptDT');
                         result[i].sendDT := getJSonString(jsons[i],'sendDT');
                         result[i].resultDT := getJSonString(jsons[i],'resultDT');
                         result[i].sendResult := getJSonString(jsons[i],'sendResult');
@@ -463,10 +465,11 @@ begin
                         result.list[i].receiveNum       := getJSonString(jSons[i],'receiveNum');
                         result.list[i].receiveName      := getJSonString(jSons[i],'receiveName');
                         result.list[i].resultDT         := getJSonString(jSons[i],'resultDT');
-                        result.list[i].sendDT         := getJSonString(jSons[i],'sendDT');
-                        result.list[i].reserveDT         := getJSonString(jSons[i],'reserveDT');
+                        result.list[i].receiptDT        := getJSonString(jSons[i],'receiptDT');
+                        result.list[i].sendDT           := getJSonString(jSons[i],'sendDT');
+                        result.list[i].reserveDT        := getJSonString(jSons[i],'reserveDT');
                         result.list[i].sendResult       := getJSonString(jSons[i],'sendResult');
-                        result.list[i].tranNet       := getJSonString(jSons[i],'tranNet');
+                        result.list[i].tranNet          := getJSonString(jSons[i],'tranNet');
                         result.list[i].state            := getJSonInteger(jSons[i],'state');
                         result.list[i].messageType      := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                 end;
