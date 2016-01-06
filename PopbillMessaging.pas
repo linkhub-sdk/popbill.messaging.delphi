@@ -76,6 +76,15 @@ type
                 message         : string;
         end;
 
+        TAutoDenyInfo = class
+        public
+                number  : string;
+                regDT   : string;
+        end;
+
+        TAutoDenyList = Array Of TAutoDenyInfo;
+
+
         TMessagingService = class(TPopbillBaseService)
         private
                 function SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; content : string; subject : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
@@ -112,6 +121,10 @@ type
                 function Search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; Order : String; UserID : String) :TSearchList;
                 //문자관련 연결 url.
                 function GetURL(CorpNum : String; UserID : String; TOGO : String) : String;
+
+                //080 수신거부목록 확인
+                function GetAutoDenyList(CorpNum : String) : TAutoDenyList;
+
         end;
 implementation
 constructor TMessagingService.Create(LinkID : String; SecretKey : String);
@@ -477,6 +490,31 @@ begin
                 raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
         end;
         
+end;
+
+function TMessagingService.GetAutoDenyList(CorpNum : string) : TAutoDenyList;
+var
+        responseJson : String;
+        jSons : ArrayOfString;
+        i : Integer;
+begin
+
+        responseJson := httpget('/Message/Denied',CorpNum, '');
+
+        try
+                jSons := ParseJsonList(responseJson);
+                SetLength(result,Length(jSons));
+
+                for i:= 0 to Length(jSons)-1 do
+                begin
+                        result[i] := TAutoDenyInfo.Create;
+                        result[i].number := getJsonString(jSons[i],'number');
+                        result[i].regDT := getJsonString(jSons[i],'regDT');
+                        
+                end;
+        except on E:Exception do
+                raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
+        end;
 end;
 
 //End of Unit;
