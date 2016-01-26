@@ -74,6 +74,7 @@ type
                 pageCount       : integer;
                 list            : TSentMessageList;
                 message         : string;
+                destructor Destroy; override;
         end;
 
         TAutoDenyInfo = class
@@ -127,6 +128,17 @@ type
 
         end;
 implementation
+destructor TSearchList.Destroy;
+var
+  I: Integer;
+begin
+  for I := 0 to Length(list)-1 do
+    if Assigned(list[I]) then
+      list[I].Free;
+  SetLength(list, 0);
+  inherited Destroy;
+end;
+
 constructor TMessagingService.Create(LinkID : String; SecretKey : String);
 begin
        inherited Create(LinkID,SecretKey);
