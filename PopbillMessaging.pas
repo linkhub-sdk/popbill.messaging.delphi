@@ -33,6 +33,13 @@ uses
 type
         EnumMessageType = (SMS,LMS,XMS,MMS);
 
+        TMessageChargeInfo = class
+        public
+                unitCost : string;
+                chargeMethod : string;
+                rateSystem : string;
+        end;
+        
         TSendMessage = class
         public
                 sender          : string;
@@ -116,15 +123,21 @@ type
 
                 //메시지 상세내역 및 전송상태 확인.
                 function GetMessages(CorpNum : String; receiptNum : string; UserID : String) :TSentMessageList;
+
                 //예약전송 메시지 취소
                 function CancelReserve(CorpNum : String; receiptNum : string; UserID : String) : TResponse;
-                //메시지 전송결과 검색조회 
+
+                //메시지 전송결과 검색조회
                 function Search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; Order : String; UserID : String) :TSearchList;
+
                 //문자관련 연결 url.
                 function GetURL(CorpNum : String; UserID : String; TOGO : String) : String;
 
                 //080 수신거부목록 확인
                 function GetAutoDenyList(CorpNum : String) : TAutoDenyList;
+
+                //과금정보 확인
+                function GetChargeInfo(CorpNum :String; MsgType:EnumMessageType) : TMessageChargeInfo;
 
         end;
 implementation
@@ -150,6 +163,24 @@ function BoolToStr(b:Boolean):String;
 begin 
     if b = true then BoolToStr:='True'; 
     if b = false then BoolToStr:='False'; 
+end;
+
+function TMessagingService.GetChargeInfo(CorpNum : string; MsgType:EnumMessageType) : TMessageChargeInfo;
+var
+        responseJson : String;
+begin
+        responseJson := httpget('/Message/ChargeInfo?Type='+ GetEnumName(TypeInfo(EnumMessageType),integer(MsgType)),CorpNum,'');
+
+        try
+                result := TMessageChargeInfo.Create;
+
+                result.unitCost := getJSonString(responseJson, 'unitCost');
+                result.chargeMethod := getJSonString(responseJson, 'chargeMethod');
+                result.rateSystem := getJSonString(responseJson, 'rateSystem');
+
+        except on E:Exception do
+                raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
+        end;
 end;
 
 function TMessagingService.GetUnitCost(CorpNum : String; MsgType:EnumMessageType) : Single;
