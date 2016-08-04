@@ -528,6 +528,7 @@ begin
 
                         result.list[i].content          := getJSonString(jSons[i],'content');
                         result.list[i].sendNum          := getJSonString(jSons[i],'sendNum');
+                        result.list[i].senderName          := getJSonString(jSons[i],'senderName');
                         result.list[i].subject          := getJSonString(jSons[i],'subject');
                         result.list[i].receiveNum       := getJSonString(jSons[i],'receiveNum');
                         result.list[i].receiveName      := getJSonString(jSons[i],'receiveName');
