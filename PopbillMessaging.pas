@@ -43,6 +43,7 @@ type
         TSendMessage = class
         public
                 sender          : string;
+                senderName      : string;
                 receiver        : string;
                 receiverName    : string;
                 content         : string;
@@ -60,6 +61,7 @@ type
                 messageType     : EnumMessageType;
                 content         : string;
                 sendNum         : string;
+                senderName        : string;
                 receiveNum      : string;
                 receiveName     : string;
                 reserveDT       : string;
@@ -95,7 +97,7 @@ type
 
         TMessagingService = class(TPopbillBaseService)
         private
-                function SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; content : string; subject : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+                function SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; senderName : string; content : string; subject : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
         public
                 constructor Create(LinkID : String; SecretKey : String);
 
@@ -103,23 +105,23 @@ type
                 function GetUnitCost(CorpNum : String; MsgType:EnumMessageType) : Single;
 
                 //SMS 관련함수.
-                function SendSMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendSMS(CorpNum : String; sender : string ; senderName : string; receiver : string; receiverName : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
                 function SendSMS(CorpNum : String; Messages : TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
-                function SendSMS(CorpNum : String; sender : string; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendSMS(CorpNum : String; sender : string; senderName : string; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
 
                 //LMS 관련함수.
-                function SendLMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendLMS(CorpNum : String; sender : string ; senderName : string; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
                 function SendLMS(CorpNum : String; Messages : TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
-                function SendLMS(CorpNum : String; sender : String; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendLMS(CorpNum : String; sender : String; senderName : string; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
 
                 //XMS 관련함수.
-                function SendXMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendXMS(CorpNum : String; sender : string; senderName : string; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
                 function SendXMS(CorpNum : String; Messages : TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
-                function SendXMS(CorpNum : String; sender : String; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendXMS(CorpNum : String; sender : String; senderName : String; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
 
                 //MMS 관련함수.
-                function SendMMS(CorpNum : String; sender : String; receiver : String; receiverName : String; subject : String; content : String; mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
-                function SendMMS(CorpNum : String; sender : String; subject : String; content : String; Messages : TSendMessageList;  mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendMMS(CorpNum : String; sender : String; senderName : String; receiver : String; receiverName : String; subject : String; content : String; mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
+                function SendMMS(CorpNum : String; sender : String; senderName : String; subject : String; content : String; Messages : TSendMessageList;  mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String; overload;
 
                 //메시지 상세내역 및 전송상태 확인.
                 function GetMessages(CorpNum : String; receiptNum : string; UserID : String) :TSentMessageList;
@@ -193,7 +195,7 @@ begin
 
 end;
 
-function TMessagingService.SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; content : string; subject : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; senderName : string ; content : string; subject : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 var
         requestJson, responseJson : string;
         i : Integer;
@@ -207,6 +209,7 @@ begin
         requestJson := requestJson + '"adsYN":true,';
 
         if sender <> ''          then requestJson := requestJson + '"snd":"' + EscapeString(sender) + '",';
+        if senderName <> ''      then requestJson := requestJson + '"sndnm":"' + EscapeString(senderName) + '",';
         if content <> ''         then requestJson := requestJson + '"content":"' + EscapeString(content) + '",';
         if subject <> ''         then requestJson := requestJson + '"subject":"' + EscapeString(subject) + '",';
         if reserveDT <> ''       then requestJson := requestJson + '"sndDT":"' + EscapeString(reserveDT) + '",';
@@ -215,6 +218,7 @@ begin
         for i := 0 to Length(Messages) - 1 do begin
                 requestJson := requestJson +
                         '{"snd":"'+EscapeString(Messages[i].sender)+'",'+
+                        '"sndnm":"'+EscapeString(Messages[i].senderName)+'",'+
                         '"rcv":"'+EscapeString(Messages[i].receiver)+'",'+
                         '"rcvnm":"'+EscapeString(Messages[i].receiverName)+'",'+
                         '"msg":"'+EscapeString(Messages[i].content)+'",'+
@@ -233,7 +237,7 @@ begin
 end;
 
 
-function TMessagingService.SendMMS(CorpNum : String; sender : String; receiver : String; receiverName : String; subject : String; content : String; mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendMMS(CorpNum : String; sender : String; senderName : string; receiver : String; receiverName : String; subject : String; content : String; mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 var
         Messages : TSendMessageList;
 begin
@@ -242,15 +246,16 @@ begin
         Messages[0] := TSendMessage.Create;
 
         Messages[0].sender := sender;
+        Messages[0].senderName := senderName; 
         Messages[0].receiver := receiver;
         Messages[0].receiverName := receiverName;
         Messages[0].content := content;
         Messages[0].subject := subject;
 
-        result := SendMMS(CorpNum, sender, subject, content, Messages, mmsfilepath, reserveDT, adsYN, UserID);
+        result := SendMMS(CorpNum, sender, senderName, subject, content, Messages, mmsfilepath, reserveDT, adsYN, UserID);
 end;
 
-function TMessagingService.SendMMS(CorpNum : String; sender : String; subject : String; content : String; Messages : TSendMessageList;  mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendMMS(CorpNum : String; sender : String; senderName : String; subject : String; content : String; Messages : TSendMessageList;  mmsfilepath : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 
 var
         requestJson, responseJson : string;
@@ -271,6 +276,7 @@ begin
         requestJson := '{';
 
         if sender <> ''          then requestJson := requestJson + '"snd":"' + EscapeString(sender) + '",';
+        if senderName <> ''      then requestJson := requestJson + '"sndnm":"' + EscapeString(senderName) + '",';
         if content <> ''         then requestJson := requestJson + '"content":"' + EscapeString(content) + '",';
         if subject <> ''         then requestJson := requestJson + '"subject":"' + EscapeString(subject) + '",';
         if reserveDT <> ''       then requestJson := requestJson + '"sndDT":"' + EscapeString(reserveDT) + '",';
@@ -279,6 +285,7 @@ begin
         for i := 0 to Length(Messages) - 1 do begin
                 requestJson := requestJson +
                         '{"snd":"'+EscapeString(Messages[i].sender)+'",'+
+                        '"sndnm":"'+EscapeString(Messages[i].senderName)+'",'+
                         '"rcv":"'+EscapeString(Messages[i].receiver)+'",'+
                         '"rcvnm":"'+EscapeString(Messages[i].receiverName)+'",'+
                         '"msg":"'+EscapeString(Messages[i].content)+'",'+
@@ -301,7 +308,7 @@ begin
        result := getJSonString(responseJson,'receiptNum');
 end;
 
-function TMessagingService.SendSMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendSMS(CorpNum : String; sender : string ; senderName : string; receiver : string; receiverName : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 var
         Messages : TSendMessageList;
 begin
@@ -311,6 +318,7 @@ begin
         Messages[0] := TSendMessage.Create;
 
         Messages[0].sender := sender;
+        Messages[0].senderName := senderName;
         Messages[0].receiver := receiver;
         Messages[0].receiverName := receiverName;
         Messages[0].content := content;
@@ -321,16 +329,16 @@ end;
 
 function TMessagingService.SendSMS(CorpNum : String; Messages : TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 begin
-        result:= SendSMS(CorpNum,'','',Messages,reserveDT,adsYN,UserID);
+        result:= SendSMS(CorpNum,'','','',Messages,reserveDT,adsYN,UserID);
 
 end;
 
-function TMessagingService.SendSMS(CorpNum : String; sender : string; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendSMS(CorpNum : String; sender : string; senderName :string; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 begin
-        result := SendMessage(SMS,CorpNum,sender,content,'',Messages,reserveDT,adsYN, UserID);
+        result := SendMessage(SMS,CorpNum,sender, senderName, content,'',Messages,reserveDT,adsYN, UserID);
 end;
 
-function TMessagingService.SendLMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendLMS(CorpNum : String; sender : string ; senderName : string; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 var
         Messages : TSendMessageList;
 begin
@@ -340,6 +348,7 @@ begin
         Messages[0] := TSendMessage.Create;
 
         Messages[0].sender := sender;
+        Messages[0].senderName := senderName;
         Messages[0].receiver := receiver;
         Messages[0].receiverName := receiverName;
         Messages[0].content := content;
@@ -351,16 +360,16 @@ end;
 
 function TMessagingService.SendLMS(CorpNum : String; Messages : TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 begin
-        result:= SendLMS(CorpNum,'','','',Messages,reserveDT,adsYN, UserID);
+        result:= SendLMS(CorpNum,'','','','',Messages,reserveDT,adsYN, UserID);
 
 end;
 
-function TMessagingService.SendLMS(CorpNum : String; sender : string; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendLMS(CorpNum : String; sender : string; senderName :string; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 begin
-        result := SendMessage(LMS,CorpNum,sender,content,subject,Messages,reserveDT,adsYN, UserID);
+        result := SendMessage(LMS,CorpNum,sender, senderName, content,subject,Messages,reserveDT,adsYN, UserID);
 end;
 
-function TMessagingService.SendXMS(CorpNum : String; sender : string ; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendXMS(CorpNum : String; sender : string ; senderName : string; receiver : string; receiverName : String; subject : String; content : String; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 var
         Messages : TSendMessageList;
 begin
@@ -370,6 +379,7 @@ begin
         Messages[0] := TSendMessage.Create;
 
         Messages[0].sender := sender;
+        Messages[0].senderName := senderName;
         Messages[0].receiver := receiver;
         Messages[0].receiverName := receiverName;
         Messages[0].content := content;
@@ -381,13 +391,13 @@ end;
 
 function TMessagingService.SendXMS(CorpNum : String; Messages : TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 begin
-        result:= SendXMS(CorpNum,'','','',Messages,reserveDT,adsYN, UserID);
+        result:= SendXMS(CorpNum,'','','','',Messages,reserveDT,adsYN, UserID);
 
 end;
 
-function TMessagingService.SendXMS(CorpNum : String; sender : string; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
+function TMessagingService.SendXMS(CorpNum : String; sender : string; senderName : string; subject : String; content : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String) : String;
 begin
-        result := SendMessage(XMS,CorpNum,sender,content,subject,Messages,reserveDT, adsYN, UserID);
+        result := SendMessage(XMS,CorpNum,sender,senderName, content,subject,Messages,reserveDT, adsYN, UserID);
 end;
 
 function TMessagingService.GetMessages(CorpNum : String; receiptNum : string; UserID : String) :TSentMessageList;
@@ -413,6 +423,7 @@ begin
                         result[i].messageType := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                         result[i].content := getJSonString(jsons[i],'content');
                         result[i].sendNum := getJSonString(jsons[i],'sendNum');
+                        result[i].senderName := getJSonString(jsons[i],'senderName');
                         result[i].receiveNum := getJSonString(jsons[i],'receiveNum');
                         result[i].receiveName := getJSonString(jsons[i],'receiveName');
                         result[i].reserveDT := getJSonString(jsons[i],'reserveDT');
