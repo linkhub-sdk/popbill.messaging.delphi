@@ -58,6 +58,7 @@ type
         TSentMessage = class
         public
                 state           : Integer;
+                result          : Integer;
                 subject         : string;
                 messageType     : EnumMessageType;
                 content         : string;
@@ -512,6 +513,7 @@ begin
                         result[i] := TSentMessage.Create;
 
                         result[i].state := getJSonInteger(jsons[i],'state');
+                        result[i].result := getJSonInteger(jsons[i],'result');
                         result[i].subject := getJSonString(jsons[i],'subject');
                         result[i].messageType := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                         result[i].content := getJSonString(jsons[i],'content');
@@ -632,6 +634,7 @@ begin
                         result.list[i].sendResult       := getJSonString(jSons[i],'sendResult');
                         result.list[i].tranNet          := getJSonString(jSons[i],'tranNet');
                         result.list[i].state            := getJSonInteger(jSons[i],'state');
+                        result.list[i].result            := getJSonInteger(jSons[i],'result');
                         result.list[i].messageType      := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                 end;
         except on E:Exception do
