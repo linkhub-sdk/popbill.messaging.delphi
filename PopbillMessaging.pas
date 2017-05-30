@@ -9,7 +9,7 @@
 * Author : Kim Seongjun (pallet027@gmail.com)
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
-* Updated : 2017-02-23
+* Updated : 2017-05-29
 * Thanks for your interest. 
 *=================================================================================
 *)
@@ -77,6 +77,15 @@ type
                 destructor Destroy; override;
         end;
 
+        TMSGSenderNumber = class
+        public
+                number : string;
+                state : integer;
+                representYN : Boolean;
+        end;
+
+        TMSGSenderNumberList = Array of TMSGSenderNumber;
+
         TAutoDenyInfo = class
         public
                 number  : string;
@@ -142,6 +151,10 @@ type
 
                 //과금정보 확인
                 function GetChargeInfo(CorpNum :String; MsgType:EnumMessageType) : TMessageChargeInfo;
+
+
+                // 발신번호 목록 조회
+                function GetSenderNumberList(CorpNum : String; UserID : String = '') : TMSGSenderNumberList;
 
         end;
 implementation
@@ -660,6 +673,32 @@ begin
                         result[i].number := getJsonString(jSons[i],'number');
                         result[i].regDT := getJsonString(jSons[i],'regDT');
                         
+                end;
+        except on E:Exception do
+                raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
+        end;
+end;
+
+
+function TMessagingService.GetSenderNumberList(CorpNum : string; UserID: String) : TMSGSenderNumberList;
+var
+        responseJson : String;
+        jSons : ArrayOfString;
+        i : Integer;
+begin
+
+        responseJson := httpget('/Message/SenderNumber',CorpNum, UserID);
+
+        try
+                jSons := ParseJsonList(responseJson);
+                SetLength(result,Length(jSons));
+
+                for i:= 0 to Length(jSons)-1 do
+                begin
+                        result[i] := TMSGSenderNumber.Create;
+                        result[i].number := getJsonString(jSons[i],'number');
+                        result[i].state := getJsonInteger(jSons[i],'state');
+                        result[i].representYN := getJsonBoolean(jSons[i],'representYN');
                 end;
         except on E:Exception do
                 raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
