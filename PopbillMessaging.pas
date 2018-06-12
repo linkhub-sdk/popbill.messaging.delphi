@@ -10,7 +10,9 @@
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
 * Updated : 2017-07-19
-* Thanks for your interest. 
+* Contributor : Kim Eunhye (code@linkhub.co.kr)
+* Updated : 2018-06-12
+* Thanks for your interest.
 *=================================================================================
 *)
 unit PopbillMessaging;
