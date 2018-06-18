@@ -11,7 +11,7 @@
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
 * Updated : 2017-07-19
 * Contributor : Kim Eunhye (code@linkhub.co.kr)
-* Updated : 2018-06-15
+* Updated : 2018-06-18
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -96,10 +96,23 @@ type
 
         TAutoDenyList = Array Of TAutoDenyInfo;
 
+        TSentMessageSummaryInfo = class
+        public
+                rNum : String;
+                sn   : String;
+                stat : String;
+                rlt  : String;
+                sDT  : String;
+                rDT  : String;
+                net  : String;
+        end;
+
+        TSentMessageSummaryInfoList = Array of TSentMessageSummaryInfo;
 
         TMessagingService = class(TPopbillBaseService)
         private
                 function SendMessage(MessageType : EnumMessageType; CorpNum : String; sender : string; senderName : string; content : string; subject : string; Messages: TSendMessageList; reserveDT : String; adsYN : Boolean; UserID : String; requestNum : String) : String;
+                function jsonToSentMessageInfo(json : String) : TSentMessageSummaryInfo;
         public
                 constructor Create(LinkID : String; SecretKey : String);
 
@@ -163,6 +176,9 @@ type
 
                 // 발신번호 목록 조회
                 function GetSenderNumberList(CorpNum : String; UserID : String = '') : TMSGSenderNumberList;
+
+                // 전송내역 요약정보 확인
+                function GetStates(CorpNum : String; receiptNumList : Array of String; UserID : String = '') : TSentMessageSummaryInfoList;
 
         end;
 implementation
@@ -775,6 +791,60 @@ begin
         except on E:Exception do
                 raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
         end;
+end;
+
+function TMessagingService.GetStates(CorpNum: String; receiptNumList: array of String;
+                                     UserID : String = ''): TSentMessageSummaryInfoList;
+var
+        requestJson : string;
+        responseJson : string;
+        jSons : ArrayOfString;
+        i : Integer;
+begin
+        if Length(receiptNumList) = 0 then
+        begin
+                raise EPopbillException.Create(-99999999,'접수번호가 입력되지 않았습니다.');
+                Exit;
+        end;
+
+        requestJson := '[';
+        for i:=0 to Length(receiptNumList) -1 do
+        begin
+                requestJson := requestJson + '"' + receiptNumList[i] + '"';
+                if (i + 1) < Length(receiptNumList) then requestJson := requestJson + ',';
+        end;
+
+        requestJson := requestJson + ']';
+
+        responseJson := httppost('/Message/States',CorpNum,UserID,requestJson);
+
+        try
+                jSons := ParseJsonList(responseJson);
+                SetLength(result,Length(jSons));
+
+                for i := 0 to Length(jSons)-1 do
+                begin
+                        result[i] := jsonToSentMessageInfo(jSons[i]);
+                end;
+
+        except on E:Exception do
+                raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
+        end;
+
+end;
+
+function TMessagingService.jsonToSentMessageInfo(json: String): TSentMessageSummaryInfo;
+begin
+        result      := TSentMessageSummaryInfo.create;
+
+        result.rNum := getJSonString(json, 'rNum');
+        result.sn   := getJSonString(json, 'sn');
+        result.sn   := getJSonString(json, 'sn');
+        result.stat := getJSonString(json, 'stat');
+        result.rlt  := getJSonString(json, 'rlt');
+        result.sDT  := getJSonString(json, 'sDT');
+        result.rDT  := getJSonString(json, 'rDT');
+        result.net  := getJSonString(json, 'net');
 end;
 
 //End of Unit;
