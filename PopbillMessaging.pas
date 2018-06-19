@@ -11,7 +11,7 @@
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
 * Updated : 2017-07-19
 * Contributor : Kim Eunhye (code@linkhub.co.kr)
-* Updated : 2018-06-18
+* Updated : 2018-06-19
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -838,10 +838,9 @@ begin
         result      := TSentMessageSummaryInfo.create;
 
         result.rNum := getJSonString(json, 'rNum');
-        result.sn   := getJSonString(json, 'sn');
-        result.sn   := getJSonString(json, 'sn');
-        result.stat := getJSonString(json, 'stat');
-        result.rlt  := getJSonString(json, 'rlt');
+        result.sn   := IntToStr(getJSonInteger(json, 'sn'));
+        result.stat := IntToStr(getJSonInteger(json, 'stat'));
+        result.rlt  := IntToStr(getJSonInteger(json, 'rlt'));
         result.sDT  := getJSonString(json, 'sDT');
         result.rDT  := getJSonString(json, 'rDT');
         result.net  := getJSonString(json, 'net');
