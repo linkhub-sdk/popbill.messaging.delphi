@@ -11,7 +11,7 @@
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
 * Updated : 2017-07-19
 * Contributor : Kim Eunhye (code@linkhub.co.kr)
-* Updated : 2018-09-18
+* Updated : 2018-09-26
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -107,6 +107,7 @@ type
                 sDT  : String;
                 rDT  : String;
                 net  : String;
+                srt  : String;
         end;
 
         TSentMessageSummaryInfoList = Array of TSentMessageSummaryInfo;
@@ -931,6 +932,7 @@ begin
         result.sDT  := getJSonString(json, 'sDT');
         result.rDT  := getJSonString(json, 'rDT');
         result.net  := getJSonString(json, 'net');
+        result.srt  := getJSonString(json, 'srt');
 end;
 
 //End of Unit;
