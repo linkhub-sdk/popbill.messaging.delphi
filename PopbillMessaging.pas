@@ -170,6 +170,12 @@ type
                 //문자관련 연결 url.
                 function GetURL(CorpNum : String; UserID : String; TOGO : String ) : String; overload;
 
+                //문자 전송내역  url.
+                function GetSentListURL(CorpNum : String; UserID : String) : String;
+
+                //문자 발신번호 관리 url.
+                function GetSenderNumberMgtURL(CorpNum : String; UserID : String) : String;
+
                 //080 수신거부목록 확인
                 function GetAutoDenyList(CorpNum : String) : TAutoDenyList;
 
@@ -606,6 +612,25 @@ begin
         responseJson := httpget('/Message/?TG=' + TOGO ,CorpNum,UserID);
         result := getJSonString(responseJson,'url');
 end;
+
+
+function TMessagingService.GetSentListURL(CorpNum : String; UserID : String) : String;
+var
+        responseJson : String;
+begin
+        responseJson := httpget('/Message/?TG=BOX' ,CorpNum,UserID);
+        result := getJSonString(responseJson,'url');
+end;
+
+function TMessagingService.GetSenderNumberMgtURL(CorpNum : String; UserID : String) : String;
+var
+        responseJson : String;
+begin
+        responseJson := httpget('/Message/?TG=SENDER' ,CorpNum,UserID);
+        result := getJSonString(responseJson,'url');
+end;
+
+
 
 function UrlEncodeUTF8(stInput : widestring) : string;
   const
