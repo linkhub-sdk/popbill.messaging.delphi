@@ -9,7 +9,7 @@
 * Author : Kim Seongjun (pallet027@gmail.com)
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
-* Updated : 2019-03-20
+* Updated : 2019-05-03
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -899,7 +899,7 @@ function UrlEncodeUTF8(stInput : widestring) : string;
 
 function TMessagingService.search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; Order : String; UserID : String = '') :TSearchList;
 begin
-        Search(CorpNum, SDate, EDate, State, Item, ReserveYN, SenderYN, Page, PerPage, Order, '', UserID);
+        result := Search(CorpNum, SDate, EDate, State, Item, ReserveYN, SenderYN, Page, PerPage, Order, '', UserID);
 end;
 
 function TMessagingService.Search(CorpNum, SDate, EDate: String; State, Item: array of String; ReserveYN, SenderYN: boolean; Page, PerPage: Integer; Order, QString, UserID: String): TSearchList;
