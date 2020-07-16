@@ -9,7 +9,7 @@
 * Author : Kim Seongjun (pallet027@gmail.com)
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhub.co.kr)
-* Updated : 2019-05-03
+* Updated : 2020-07-16
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -84,6 +84,7 @@ type
                 number : string;
                 state : integer;
                 representYN : Boolean;
+                memo : string;
         end;
 
         TMSGSenderNumberList = Array of TMSGSenderNumber;
@@ -1108,6 +1109,7 @@ begin
                 begin
                         result[i] := TMSGSenderNumber.Create;
                         result[i].number := getJsonString(jSons[i],'number');
+                        result[i].memo := getJsonString(jSons[i],'memo');
                         result[i].state := getJsonInteger(jSons[i],'state');
                         result[i].representYN := getJsonBoolean(jSons[i],'representYN');
                 end;
