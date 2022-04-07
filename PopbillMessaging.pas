@@ -6,10 +6,10 @@
 * For strongly secured communications, this module uses SSL/TLS with OpenSSL.
 *
 * http://www.popbill.com
-* Author : Kim Seongjun (pallet027@gmail.com)
+* Author : Kim Seongjun
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhubcorp.com)
-* Updated : 2022-01-10
+* Updated : 2022-04-07
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -174,6 +174,9 @@ type
 
                 //문자 발신번호 관리 url.
                 function GetSenderNumberMgtURL(CorpNum : String; UserID : String) : String;
+                
+                // 발신번호 등록여부 확인
+                function CheckSenderNumber(CorpNum : String; SenderNumber : String; UserID : String = '') : TResponse;
 
                 //080 수신거부목록 확인
                 function GetAutoDenyList(CorpNum : String) : TAutoDenyList;
@@ -802,6 +805,57 @@ begin
                                 exit;
                         end;
                 end;
+        end;
+end;
+
+function TMessagingService.CheckSenderNumber(CorpNum : String; SenderNumber : String; UserID : String = '') : TResponse;
+var
+        responseJson : String;
+begin
+        if SenderNumber = '' then
+        begin
+                if FIsThrowException then
+                begin
+                        raise EPopbillException.Create(-99999999,'발신번호가 입력되지 않았습니다');
+                        exit;
+                end
+                else
+                begin
+                        result.code := -99999999;
+                        result.message := '발신번호가 입력되지 않았습니다';
+                        exit;
+                end;
+        end;
+        
+        try
+                responseJson := httpget('/Message/CheckSenderNumber/'+SenderNumber,CorpNum,UserID);
+        except
+                on le : EPopbillException do begin
+                        if FIsThrowException then
+                        begin
+                                raise EPopbillException.Create(le.code, le.Message);
+                                exit;
+                        end
+                        else
+                        begin
+                                result.code := le.code;
+                                result.message := le.message;
+                                exit;
+                        end;
+                end;
+        end;
+
+        if LastErrCode <> 0 then
+        begin
+                result.code := LastErrCode;
+                result.message := LastErrMessage;
+                exit;
+        end
+        else
+        begin
+                result.code := getJsonInteger(responseJson,'code');
+                result.message := getJsonString(responseJson,'message');
+                exit;
         end;
 end;
 
