@@ -9,7 +9,7 @@
 * Author : Kim Seongjun
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhubcorp.com)
-* Updated : 2022-04-07
+* Updated : 2022-07-25
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -38,6 +38,7 @@ type
                 receiverName    : string;
                 content         : string;
                 subject         : string;
+                interOPRefKey   : string;
         end;
 
         TSendMessageList = Array Of TSendMessage;
@@ -63,6 +64,7 @@ type
                 sendResult      : string;
                 receiptNum      : String;
                 requestNum      : String;
+                interOPRefKey   : string;
         end;
 
         TSentMessageList = Array of TSentMessage;
@@ -332,7 +334,8 @@ begin
                         '"rcv":"'+EscapeString(Messages[i].receiver)+'",'+
                         '"rcvnm":"'+EscapeString(Messages[i].receiverName)+'",'+
                         '"msg":"'+EscapeString(Messages[i].content)+'",'+
-                        '"sjt":"'+EscapeString(Messages[i].subject)+'"}';
+                        '"sjt":"'+EscapeString(Messages[i].subject)+'",'+
+                        '"interOPRefKey":"'+EscapeString(Messages[i].interOPRefKey)+'"}';
 
                 if i < Length(Messages) - 1 then requestJson := requestJson + ',';
         end;
@@ -435,7 +438,8 @@ begin
                         '"rcv":"'+EscapeString(Messages[i].receiver)+'",'+
                         '"rcvnm":"'+EscapeString(Messages[i].receiverName)+'",'+
                         '"msg":"'+EscapeString(Messages[i].content)+'",'+
-                        '"sjt":"'+EscapeString(Messages[i].subject)+'"}';
+                        '"sjt":"'+EscapeString(Messages[i].subject)+'",'+
+                        '"interOPRefKey":"'+EscapeString(Messages[i].interOPRefKey)+'"}';
 
                 if i < Length(Messages) - 1 then requestJson := requestJson + ',';
         end;
@@ -695,6 +699,7 @@ begin
                         result[i].tranNet := getJSonString(jsons[i],'tranNet');
                         result[i].receiptNum := getJSonString(jsons[i],'receiptNum');
                         result[i].requestNum := getJSonString(jsons[i],'requestNum');
+                        result[i].interOPRefKey := getJSonString(jsons[i],'interOPRefKey');
                 end;
 
         except on E:Exception do begin
@@ -1059,6 +1064,7 @@ begin
                         result.list[i].messageType      := EnumMessageTYpe(GetEnumValue(TypeInfo(EnumMessageTYpe),getJSonString(jsons[i],'type')));
                         result.list[i].receiptNum       := getJSonString(jSons[i],'receiptNum');
                         result.list[i].requestNum       := getJSonString(jSons[i],'requestNum');
+                        result.list[i].interOPRefKey    := getJSonString(jsons[i],'interOPRefKey');
                 end;
         except on E:Exception do
                 raise EPopbillException.Create(-99999999,'결과처리 실패.[Malformed Json]');
@@ -1304,6 +1310,7 @@ begin
                         result[i].tranNet := getJSonString(jsons[i],'tranNet');
                         result[i].receiptNum := getJSonString(jsons[i],'receiptNum');
                         result[i].requestNum := getJSonString(jsons[i],'requestNum');
+                        result[i].interOPRefKey := getJSonString(jsons[i],'interOPRefKey');
                 end;
 
         except
