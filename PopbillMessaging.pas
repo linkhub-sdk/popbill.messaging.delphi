@@ -9,7 +9,7 @@
 * Author : Kim Seongjun
 * Written : 2014-04-01
 * Contributor : Jeong Yohan (code@linkhubcorp.com)
-* Updated : 2022-07-25
+* Updated : 2022-10-31
 * Thanks for your interest.
 *=================================================================================
 *)
@@ -160,6 +160,12 @@ type
 
                 //전송 요청번호 할당된 예약전송 메시지 취소
                 function CancelReserveRN(CorpNum : String; requestNum : String; UserID : String = '') : TResponse;
+
+                //예약전송 메시지 취소 (수신번호)
+                function CancelReservebyRCV(CorpNum : String; receiptNum : string; receiveNum : string; UserID : String = '') : TResponse;
+
+                //전송 요청번호 할당된 예약전송 메시지 취소 (수신번호)
+                function CancelReserveRNbyRCV(CorpNum : String; requestNum : String; receiveNum : string; UserID : String = '') : TResponse;
 
                 //메시지 전송결과 검색조회
                 function Search(CorpNum : String; SDate : String; EDate : String; State : Array Of String; Item : Array Of String; ReserveYN : boolean; SenderYN : boolean; Page : Integer; PerPage : Integer; Order : String; UserID : String = '') :TSearchList; overload;
@@ -771,6 +777,74 @@ begin
         end;
 end;
 
+function TMessagingService.CancelReservebyRCV(CorpNum : String; receiptNum : string; receiveNum : string; UserID : String = '') : TResponse;
+var
+        requestJson : string;
+        responseJson : String;
+begin
+        if receiptNum = '' then
+        begin
+                if FIsThrowException then
+                begin
+                        raise EPopbillException.Create(-99999999,'접수번호(ReceiptNum)가 입력되지 않았습니다.');
+                        exit;
+                end
+                else
+                begin
+                        result.code := -99999999;
+                        result.message := '접수번호(ReceiptNum)가 입력되지 않았습니다.';
+                        exit;
+                end;
+        end;
+
+        if receiveNum = '' then
+        begin
+                if FIsThrowException then
+                begin
+                        raise EPopbillException.Create(-99999999,' 수신번호가 입력되지 않았습니다.');
+                        exit;
+                end
+                else
+                begin
+                        result.code := -99999999;
+                        result.message := '수신번호가 입력되지 않았습니다.';
+                        exit;
+                end;
+        end;
+
+        requestJson := receiveNum;
+
+        try
+                responseJson := httppost('/Message/' + receiptNum + '/Cancel',CorpNum,UserID,requestJson);
+        except
+                on le : EPopbillException do begin
+                        if FIsThrowException then
+                        begin
+                                raise EPopbillException.Create(le.code, le.message);
+                                Exit;               
+                        end
+                        else
+                        begin
+                                result.code := le.code;
+                                result.message := le.Message;
+                                exit;
+                        end;
+                end;
+        end;
+
+        if LastErrCode <> 0 then
+        begin
+                result.code := LastErrCode;
+                result.message := LastErrMessage;
+        end
+        else
+        begin
+                result.code := getJSonInteger(responseJson,'code');
+                result.message := getJSonString(responseJson,'message');
+        end;
+end;
+
+
 function TMessagingService.getURL(CorpNum : String; TOGO : String) : String;
 begin
          result := getURL(CorpNum, '', TOGO);
@@ -1220,6 +1294,75 @@ begin
                         begin
                                 raise EPopbillException.Create(le.code,le.Message);
                                 exit;
+                        end
+                        else
+                        begin
+                                result.code := le.code;
+                                result.message := le.Message;
+                                exit;
+                        end;
+                end;
+        end;
+
+        if LastErrCode <> 0 then
+        begin
+                result.code := LastErrCode;
+                result.message := LastErrMessage;
+                exit;
+        end
+        else
+        begin
+                result.code := getJSonInteger(responseJson,'code');
+                result.message := getJSonString(responseJson,'message');
+                exit;
+        end;
+end;
+
+function TMessagingService.CancelReserveRNbyRCV(CorpNum, requestNum, receiveNum, UserID: String): TResponse;
+var
+        requestJson : string;
+        responseJson : String;
+begin
+        if requestNum = '' then
+        begin
+                if FIsThrowException then
+                begin
+                        raise EPopbillException.Create(-99999999,'요청번호(requestNum)가 입력되지 않았습니다.');
+                        exit;
+                end
+                else
+                begin
+                        result.code := -99999999;
+                        result.message := '요청번호(requestNum)가 입력되지 않았습니다.';
+                        exit;
+                end;
+        end;
+
+        if receiveNum = '' then
+        begin
+                if FIsThrowException then
+                begin
+                        raise EPopbillException.Create(-99999999,'수신번호가 입력되지 않았습니다.');
+                        exit;
+                end
+                else
+                begin
+                        result.code := -99999999;
+                        result.message := '수신번호가 입력되지 않았습니다.';
+                        exit;
+                end;
+        end;
+
+        requestJson := receiveNum;
+
+        try
+                responseJson := httppost('/Message/Cancel/' + requestNum,CorpNum,UserID,requestJson);
+        except
+                on le : EPopbillException do begin
+                        if FIsThrowException then
+                        begin
+                                raise EPopbillException.Create(le.code, le.message);
+                                Exit;
                         end
                         else
                         begin
